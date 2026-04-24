@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>華媽咪閨蜜花園</title>
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <style>
+        :root { --main-yellow: #FFD257; --main-orange: #FF6B00; --bg: #FFF9E7; }
+        body { background-color: var(--bg); font-family: sans-serif; margin: 0; padding-bottom: 30px; }
+        .header { background: var(--main-yellow); padding: 20px; text-align: center; border-radius: 0 0 20px 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .profile-img { width: 60px; height: 60px; border-radius: 50%; border: 2px solid white; }
+        .tab-box { display: flex; background: white; margin: 15px; border-radius: 10px; overflow: hidden; border: 1px solid var(--main-yellow); }
+        .tab { flex: 1; padding: 12px; text-align: center; font-weight: bold; cursor: pointer; }
+        .tab.active { background: var(--main-yellow); color: var(--main-orange); }
+        .page { display: none; padding: 15px; }
+        .page.active { display: block; }
+        .card { background: white; border-radius: 15px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .gift-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .gift-item { border: 1px solid #F0F0F0; border-radius: 10px; padding: 10px; text-align: center; background: #FFF; }
+        .gift-img { width: 100%; border-radius: 8px; aspect-ratio: 1; object-fit: cover; }
+        .btn { background: var(--main-orange); color: white; border: none; padding: 10px; border-radius: 25px; width: 100%; margin-top: 8px; cursor: pointer; font-weight: bold; }
+        .gift-pts { color: #E91E63; font-weight: bold; font-size: 14px; margin: 5px 0; }
+        select, input[type="file"] { width: 100%; padding: 10px; margin: 10px 0; border-radius: 8px; border: 1px solid #DDD; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <img id="uImg" class="profile-img" src="https://via.placeholder.com/60">
+    <h3 id="uName" style="margin: 10px 0 0;">載入中...</h3>
+</div>
+
+<div class="tab-box">
+    <div class="tab active" onclick="sw('p1', this)">活動集點區</div>
+    <div class="tab" onclick="sw('p2', this)">尊榮蜜豆🫘</div>
+</div>
+
+<div id="p1" class="page active">
+    <div class="card">
+        <h4>1. 活動上線集點</h4>
+        <select id="evS">
+            <option>週一|12:00 養美日記📓</option>
+            <option>週一|20:00 親子晚自習</option>
+            <option>週三|21:00 閨蜜群 Live Talk</option>
+            <option>週四|20:00 瘦身健康講座</option>
+            <option>週五|13:00 親子群 Live Talk</option>
+            <option>週五|20:00 廠商產品分享+贊助</option>
+            <option>週六|12:00 AICC(AICC活軟骨)</option>
+            <option>週日| 分享意義日（閨蜜群）</option>
+            <option>特別加碼場✨</option>
+        </select>
+        <input type="file" id="evF" accept="image/*">
+        <button class="btn" onclick="up('活動集點', 'evS', 'evF')">送出截圖審核 🚀</button>
+    </div>
+    <div class="card">
+        <h4>2. 活動禮物兌換</h4>
+        <div class="gift-grid">
+            <div class="gift-item"><img class="gift-img" src="https://i.ibb.co/5W7mVQLV/tw-11134207-7r990-lqt0aq7hc89k6c.jpg"><div>AMDS體驗組</div><div class="gift-pts">3 點</div><button class="btn" onclick="re('活動兌換','AMDS體驗組',3)">兌換</button></div>
+            <div class="gift-item"><img class="gift-img" src="https://i.ibb.co/J4Q6xm1/S-93298697.jpg"><div>多巴胺水果杯</div><div class="gift-pts">20 點</div><button class="btn" onclick="re('活動兌換','水果杯',20)">兌換</button></div>
+        </div>
+    </div>
+</div>
+
+<div id="p2" class="page">
+    <div class="card">
+        <h4>1. 蜜豆累積 (訂單上傳)</h4>
+        <input type="file" id="beF" accept="image/*">
+        <button class="btn" onclick="up('蜜豆累積', null, 'beF')">送出訂單審核 🚀</button>
+    </div>
+    <div class="card">
+        <h4>2. 蜜豆兌換方案</h4>
+        <div class="gift-grid">
+            <div class="gift-item" style="grid-column: span 2; background: #FFF3E0;"><b>🫘 3 蜜豆方案</b></div>
+            <div class="gift-item"><img class="gift-img" src="https://i.ibb.co/13hwkg4/S-25165867-0.jpg"><div>麥當勞套餐</div><button class="btn" onclick="re('蜜豆兌換','麥當勞套餐',3,'A')">方案 A</button></div>
+            <div class="gift-item"><img class="gift-img" src="https://i.ibb.co/m5DStD8Z/message-Image-1776507668994.jpg"><div>白金盾 1包</div><button class="btn" onclick="re('蜜豆兌換','白金盾 1包',3,'B')">方案 B</button></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 使用妳剛剛部署成功的 GAS 網址
+    const API = "https://script.google.com/macros/s/AKfycbx7z6QCXkx_uHqd9a-QcJ9JqJJP9tVkTyn6a-OAhmzKUTqZdsKr4Z_JO-eXQpk19r4nbg/exec";
+    
+    async function init() {
+        // ⚠️ 這裡要填入妳在 LINE Developers 申請的 LIFF ID
+        await liff.init({ liffId: "把妳的LIFF_ID貼在這裡" }); 
+        if(!liff.isLoggedIn()) liff.login();
+        const p = await liff.getProfile();
+        document.getElementById('uName').innerText = p.displayName;
+        document.getElementById('uImg').src = p.pictureUrl;
+    }
+    init();
+
+    function sw(id, el) {
+        document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+        document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        el.classList.add('active');
+    }
+
+    async function up(type, sId, fId) {
+        const file = document.getElementById(fId).files[0];
+        if(!file) return alert("請選取圖片");
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = async () => {
+            const p = await liff.getProfile();
+            const data = {
+                type: type, lineId: p.userId, userName: p.displayName,
+                itemName: sId ? document.getElementById(sId).value : "蜜豆訂單上傳",
+                image: reader.result
+            };
+            await fetch(API, { method: "POST", mode: "no-cors", body: JSON.stringify(data) });
+            alert("送出成功！請等待審核。");
+        };
+    }
+
+    async function re(type, name, pts, opt="") {
+        if(!confirm(`確定兌換「${name}」？`)) return;
+        const p = await liff.getProfile();
+        const data = {
+            type: type, lineId: p.userId, userName: p.displayName,
+            itemName: name, points: pts, optionType: opt
+        };
+        await fetch(API, { method: "POST", mode: "no-cors", body: JSON.stringify(data) });
+        alert("兌換申請已送出！");
+    }
+</script>
+</body>
+</html>

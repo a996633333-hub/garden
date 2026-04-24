@@ -2,129 +2,230 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>華媽咪閨蜜花園</title>
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <style>
-        :root { --main-yellow: #FFD257; --main-orange: #FF6B00; --bg: #FFF9E7; }
-        body { background-color: var(--bg); font-family: sans-serif; margin: 0; padding-bottom: 30px; }
-        .header { background: var(--main-yellow); padding: 20px; text-align: center; border-radius: 0 0 20px 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .profile-img { width: 60px; height: 60px; border-radius: 50%; border: 2px solid white; }
-        .tab-box { display: flex; background: white; margin: 15px; border-radius: 10px; overflow: hidden; border: 1px solid var(--main-yellow); }
-        .tab { flex: 1; padding: 12px; text-align: center; font-weight: bold; cursor: pointer; }
-        .tab.active { background: var(--main-yellow); color: var(--main-orange); }
-        .page { display: none; padding: 15px; }
-        .page.active { display: block; }
-        .card { background: white; border-radius: 15px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        body { background-color: #FDFBF7; font-family: -apple-system, "Microsoft JhengHei", sans-serif; margin: 0; padding: 15px; color: #5D4037; }
+        .tab-container { display: flex; gap: 10px; margin-bottom: 20px; position: sticky; top: 0; z-index: 10; background: #FDFBF7; padding: 5px 0; }
+        .tab-btn { flex: 1; padding: 12px; border-radius: 15px; border: 2px solid #FFD166; background: white; font-weight: bold; cursor: pointer; color: #8D6E63; font-size: 0.9rem; transition: 0.3s; }
+        .tab-btn.active { background: #FFD166; color: #5D4037; box-shadow: 0 4px 0 #FFB000; }
+        .card { background: white; padding: 15px; border-radius: 20px; border: 3px solid #FFD166; margin-bottom: 20px; }
+        .dashboard { background: #FFFDE7; border-radius: 15px; padding: 15px; text-align: center; margin-bottom: 15px; border: 2px dashed #FFCA28; }
+        .points-number { color: #FF6F00; font-size: 2.5rem; font-weight: 900; line-height: 1.2; }
         .gift-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .gift-item { border: 1px solid #F0F0F0; border-radius: 10px; padding: 10px; text-align: center; background: #FFF; }
-        .gift-img { width: 100%; border-radius: 8px; aspect-ratio: 1; object-fit: cover; }
-        .btn { background: var(--main-orange); color: white; border: none; padding: 10px; border-radius: 25px; width: 100%; margin-top: 8px; cursor: pointer; font-weight: bold; }
-        .gift-pts { color: #E91E63; font-weight: bold; font-size: 14px; margin: 5px 0; }
-        select, input[type="file"] { width: 100%; padding: 10px; margin: 10px 0; border-radius: 8px; border: 1px solid #DDD; }
+        .gift-item { background: white; border-radius: 15px; padding: 10px; display: flex; flex-direction: column; align-items: center; border: 1px solid #FFD166; position: relative; }
+        .plan-tag { position: absolute; top: 5px; left: 5px; background: #FFD166; color: #5D4037; font-size: 10px; padding: 2px 6px; border-radius: 8px; font-weight: bold; z-index: 2; }
+        .img-container { width: 100%; aspect-ratio: 1 / 1; overflow: hidden; border-radius: 10px; margin-bottom: 8px; border: 1px solid #EEE; background: #f9f9f9; }
+        .gift-img { width: 100%; height: 100%; object-fit: cover; }
+        .gift-name { font-size: 12px; font-weight: bold; text-align: center; height: 32px; display: flex; align-items: center; justify-content: center; margin-bottom: 5px; line-height: 1.2; color: #5D4037; }
+        .gift-pts { font-size: 11px; color: #D84315; font-weight: bold; margin-bottom: 8px; }
+        
+        .redeem-btn { width: 100%; padding: 8px 0; border-radius: 10px; border: none; font-size: 11px; font-weight: bold; cursor: pointer; }
+        .btn-locked { background: #CCC !important; color: #666 !important; cursor: not-allowed; }
+        .btn-active { background: #D84315 !important; color: white !important; box-shadow: 0 3px 0 #A33311; }
+        
+        .section-title { grid-column: span 2; font-size: 14px; font-weight: bold; color: #D84315; margin: 15px 0 5px 0; border-left: 4px solid #D84315; padding: 5px 0 5px 10px; background: #FFF3E0; border-radius: 0 8px 8px 0; }
+        label { display: block; margin-top: 15px; font-weight: bold; color: #8D6E63; font-size: 14px; }
+        select, input[type="file"] { width: 100%; padding: 12px; margin-top: 8px; border-radius: 12px; border: 1px solid #DDD; box-sizing: border-box; background: white; }
+        .submit-btn { width: 100%; background: #FFD166; color: #5D4037; border: none; padding: 15px; margin-top: 20px; border-radius: 25px; font-size: 1.1rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #FFB000; }
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 100; font-weight: bold; color: #D84315; }
     </style>
 </head>
 <body>
 
-<div class="header">
-    <img id="uImg" class="profile-img" src="https://via.placeholder.com/60">
-    <h3 id="uName" style="margin: 10px 0 0;">載入中...</h3>
+<div id="loading" class="overlay">🚀 處理中...</div>
+
+<div class="tab-container">
+    <button id="tab-event" class="tab-btn active" onclick="switchMainTab('event')">📝 活動集點</button>
+    <button id="tab-honey" class="tab-btn" onclick="switchMainTab('honey')">🫘 尊榮蜜豆</button>
 </div>
 
-<div class="tab-box">
-    <div class="tab active" onclick="sw('p1', this)">活動集點區</div>
-    <div class="tab" onclick="sw('p2', this)">尊榮蜜豆🫘</div>
-</div>
-
-<div id="p1" class="page active">
+<div id="eventContent">
     <div class="card">
-        <h4>1. 活動上線集點</h4>
-        <select id="evS">
-            <option>週一|12:00 養美日記📓</option>
-            <option>週一|20:00 親子晚自習</option>
-            <option>週三|21:00 閨蜜群 Live Talk</option>
-            <option>週四|20:00 瘦身健康講座</option>
-            <option>週五|13:00 親子群 Live Talk</option>
-            <option>週五|20:00 廠商產品分享+贊助</option>
-            <option>週六|12:00 AICC(AICC活軟骨)</option>
-            <option>週日| 分享意義日（閨蜜群）</option>
+        <div class="dashboard">
+            <div style="font-weight:bold; color:#F57F17; font-size: 14px;">目前活動累積點數</div>
+            <div class="points-number" id="userPoints">--</div>
+        </div>
+        <div class="gift-grid">
+            <div class="gift-item" style="grid-column: span 2;">
+                <div class="img-container" style="aspect-ratio: 2/1;"><img src="https://i.ibb.co/3Y8cdrnn/message-Image-1776500606233.jpg" class="gift-img"></div>
+                <div class="gift-name">💖 華媽咪特別禮</div><div class="gift-pts">99999 點</div>
+                <button class="redeem-btn btn-locked" id="gift-e-99999" onclick="redeem('活動特別禮', 99999)">尚未達成</button>
+            </div>
+            <div class="gift-item">
+                <div class="img-container"><img src="https://i.ibb.co/5W7mVQLV/tw-11134207-7r990-lqt0aq7hc89k6c.jpg" class="gift-img"></div>
+                <div class="gift-name">AMDS體驗組</div><div class="gift-pts">3 點</div>
+                <button class="redeem-btn btn-locked" id="gift-e-3" onclick="redeem('AMDS體驗組', 3)">尚未達成</button>
+            </div>
+            <div class="gift-item">
+                <div class="img-container"><img src="https://i.ibb.co/J4Q6xm1/S-93298697.jpg" class="gift-img"></div>
+                <div class="gift-name">多巴胺水果杯</div><div class="gift-pts">20 點</div>
+                <button class="redeem-btn btn-locked" id="gift-e-20" onclick="redeem('水果杯', 20)">尚未達成</button>
+            </div>
+            <div class="gift-item">
+                <div class="img-container"><img src="https://i.ibb.co/p6wxLqJT/S-93298699.jpg" class="gift-img"></div>
+                <div class="gift-name">露營摺疊提籃</div><div class="gift-pts">30 點</div>
+                <button class="redeem-btn btn-locked" id="gift-e-30" onclick="redeem('提籃', 30)">尚未達成</button>
+            </div>
+            <div class="gift-item">
+                <div class="img-container"><img src="https://i.ibb.co/Y75R3PmY/S-93298701.jpg" class="gift-img"></div>
+                <div class="gift-name">Kitty手提箱</div><div class="gift-pts">50 點</div>
+                <button class="redeem-btn btn-locked" id="gift-e-50" onclick="redeem('Kitty箱', 50)">尚未達成</button>
+            </div>
+            <div class="gift-item" style="grid-column: span 2;">
+                <div class="img-container" style="aspect-ratio: 2/1;"><img src="https://i.ibb.co/ympjqWgp/S-93298705.jpg" class="gift-img"></div>
+                <div class="gift-name">👑 抱枕被子二合一</div><div class="gift-pts">70 點</div>
+                <button class="redeem-btn btn-locked" id="gift-e-70" onclick="redeem('抱枕被', 70)">尚未達成</button>
+            </div>
+        </div>
+        <label>📅 參加活動/上傳心得</label>
+        <select id="eventSelect">
+            <option>週一｜12:00 養美日記</option>
+            <option>週一｜20:00 親子晚自習</option>
+            <option>週三｜21:00 閨蜜群 Live Talk</option>
+            <option>週四｜20:00 瘦身健康講座</option>
+            <option>週五｜13:00 親子群 Live Talk</option>
+            <option>週五｜20:00 廠商產品分享+贊助</option>
+            <option>週六｜12:00 AICC(AICC活軟骨)</option>
+            <option>週日｜ 分享意義日（閨蜜群）</option>
             <option>特別加碼場✨</option>
         </select>
-        <input type="file" id="evF" accept="image/*">
-        <button class="btn" onclick="up('活動集點', 'evS', 'evF')">送出截圖審核 🚀</button>
-    </div>
-    <div class="card">
-        <h4>2. 活動禮物兌換</h4>
-        <div class="gift-grid">
-            <div class="gift-item"><img class="gift-img" src="https://i.ibb.co/5W7mVQLV/tw-11134207-7r990-lqt0aq7hc89k6c.jpg"><div>AMDS體驗組</div><div class="gift-pts">3 點</div><button class="btn" onclick="re('活動兌換','AMDS體驗組',3)">兌換</button></div>
-            <div class="gift-item"><img class="gift-img" src="https://i.ibb.co/J4Q6xm1/S-93298697.jpg"><div>多巴胺水果杯</div><div class="gift-pts">20 點</div><button class="btn" onclick="re('活動兌換','水果杯',20)">兌換</button></div>
-        </div>
+        <input type="file" id="eventFile" accept="image/*">
+        <button class="submit-btn" onclick="upload('event')">送出截圖集點 🚀</button>
     </div>
 </div>
 
-<div id="p2" class="page">
+<div id="honeyContent" style="display:none;">
     <div class="card">
-        <h4>1. 蜜豆累積 (訂單上傳)</h4>
-        <input type="file" id="beF" accept="image/*">
-        <button class="btn" onclick="up('蜜豆累積', null, 'beF')">送出訂單審核 🚀</button>
-    </div>
-    <div class="card">
-        <h4>2. 蜜豆兌換方案</h4>
-        <div class="gift-grid">
-            <div class="gift-item" style="grid-column: span 2; background: #FFF3E0;"><b>🫘 3 蜜豆方案</b></div>
-            <div class="gift-item"><img class="gift-img" src="https://i.ibb.co/13hwkg4/S-25165867-0.jpg"><div>麥當勞套餐</div><button class="btn" onclick="re('蜜豆兌換','麥當勞套餐',3,'A')">方案 A</button></div>
-            <div class="gift-item"><img class="gift-img" src="https://i.ibb.co/m5DStD8Z/message-Image-1776507668994.jpg"><div>白金盾 1包</div><button class="btn" onclick="re('蜜豆兌換','白金盾 1包',3,'B')">方案 B</button></div>
+        <div class="dashboard">
+            <div style="font-weight:bold; color:#D84315;">尊榮累積蜜豆</div>
+            <div class="points-number">🫘 <span id="honeyBeans">--</span></div>
         </div>
+        <div class="gift-grid">
+            <div class="section-title">🫘 3 蜜豆</div>
+            <div class="gift-item"><span class="plan-tag">A</span><div class="img-container"><img src="https://i.ibb.co/13hwkg4/S-25165867-0.jpg" class="gift-img"></div><div class="gift-name">麥當勞套餐</div><button class="redeem-btn btn-locked hb-btn" data-pts="3" onclick="redeem('蜜豆3A-麥當勞', 3)">尚未達成</button></div>
+            <div class="gift-item"><span class="plan-tag">B</span><div class="img-container"><img src="https://i.ibb.co/m5DStD8Z/message-Image-1776507668994.jpg" class="gift-img"></div><div class="gift-name">白金盾 1包</div><button class="redeem-btn btn-locked hb-btn" data-pts="3" onclick="redeem('蜜豆3B-白金盾', 3)">尚未達成</button></div>
+            
+            <div class="section-title">🫘 10 蜜豆</div>
+            <div class="gift-item"><span class="plan-tag">A</span><div class="img-container"><img src="https://i.ibb.co/TDMncyPq/S-25165869-0.jpg" class="gift-img"></div><div class="gift-name">星巴克雙人餐</div><button class="redeem-btn btn-locked hb-btn" data-pts="10" onclick="redeem('蜜豆10A-星巴克', 10)">尚未達成</button></div>
+            <div class="gift-item"><span class="plan-tag">B</span><div class="img-container"><img src="https://i.ibb.co/nNyPLHG6/S-25165874.jpg" class="gift-img"></div><div class="gift-name">三麗鷗保溫杯</div><button class="redeem-btn btn-locked hb-btn" data-pts="10" onclick="redeem('蜜豆10B-保溫杯', 10)">尚未達成</button></div>
+            
+            <div class="section-title">🫘 18 蜜豆</div>
+            <div class="gift-item"><span class="plan-tag">A</span><div class="img-container"><img src="https://i.ibb.co/TMFbsYZH/S-25165870-0.jpg" class="gift-img"></div><div class="gift-name">肯德基蛋塔</div><button class="redeem-btn btn-locked hb-btn" data-pts="18" onclick="redeem('蜜豆18A-蛋塔', 18)">尚未達成</button></div>
+            <div class="gift-item"><span class="plan-tag">B</span><div class="img-container"><img src="https://i.ibb.co/Lhx2pRvY/S-25165873.jpg" class="gift-img"></div><div class="gift-name">檀木梳禮盒</div><button class="redeem-btn btn-locked hb-btn" data-pts="18" onclick="redeem('蜜豆18B-木梳', 18)">尚未達成</button></div>
+            
+            <div class="section-title">🫘 30 蜜豆</div>
+            <div class="gift-item"><span class="plan-tag">A</span><div class="img-container"><img src="https://i.ibb.co/vx3G3PLD/S-25165871-0.jpg" class="gift-img"></div><div class="gift-name">爭鮮 300元</div><button class="redeem-btn btn-locked hb-btn" data-pts="30" onclick="redeem('蜜豆30A-爭鮮', 30)">尚未達成</button></div>
+            <div class="gift-item"><span class="plan-tag">B</span><div class="img-container"><img src="https://i.ibb.co/qYm2xBw0/S-25165872.jpg" class="gift-img"></div><div class="gift-name">益生菌乳液</div><button class="redeem-btn btn-locked hb-btn" data-pts="30" onclick="redeem('蜜豆30B-乳液', 30)">尚未達成</button></div>
+            
+            <div class="section-title">🫘 68 蜜豆</div>
+            <div class="gift-item"><span class="plan-tag">A</span><div class="img-container"><img src="https://i.ibb.co/Mx7D84ph/message-Image-1776507523365.jpg" class="gift-img"></div><div class="gift-name">益生菌 60入</div><button class="redeem-btn btn-locked hb-btn" data-pts="68" onclick="redeem('蜜豆68A-益生菌', 68)">尚未達成</button></div>
+            <div class="gift-item"><span class="plan-tag">B</span><div class="img-container"><img src="https://i.ibb.co/992PW17B/message-Image-1776507539257.jpg" class="gift-img"></div><div class="gift-name">👑 Coach 包</div><button class="redeem-btn btn-locked hb-btn" data-pts="68" onclick="redeem('蜜豆68B-Coach', 68)">尚未達成</button></div>
+        </div>
+        <label>📸 消費截圖上傳</label>
+        <input type="file" id="shopFile" accept="image/*">
+        <button class="submit-btn" onclick="upload('shop')">上傳累積蜜豆 🛍️</button>
     </div>
 </div>
 
 <script>
-    // 使用妳剛剛部署成功的 GAS 網址
-    const API = "https://script.google.com/macros/s/AKfycbx7z6QCXkx_uHqd9a-QcJ9JqJJP9tVkTyn6a-OAhmzKUTqZdsKr4Z_JO-eXQpk19r4nbg/exec";
-    
-    async function init() {
-        // ⚠️ 這裡要填入妳在 LINE Developers 申請的 LIFF ID
-        await liff.init({ liffId: "把妳的LIFF_ID貼在這裡" }); 
-        if(!liff.isLoggedIn()) liff.login();
-        const p = await liff.getProfile();
-        document.getElementById('uName').innerText = p.displayName;
-        document.getElementById('uImg').src = p.pictureUrl;
-    }
-    init();
+    const LIFF_ID = "2008783359-9JsMUCsX"; 
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbx7z6QCXkx_uHqd9a-QcJ9JqJJP9tVkTyn6a-OAhmzKUTqZdsKr4Z_JO-eXQpk19r4nbg/exec";
+    let userName = "";
+    let userId = "";
+    let userEPoints = 0;
+    let userHBeans = 0;
 
-    function sw(id, el) {
-        document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-        document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        el.classList.add('active');
+    function switchMainTab(type) {
+        document.getElementById('tab-event').classList.toggle('active', type === 'event');
+        document.getElementById('tab-honey').classList.toggle('active', type === 'honey');
+        document.getElementById('eventContent').style.display = type === 'event' ? 'block' : 'none';
+        document.getElementById('honeyContent').style.display = type === 'honey' ? 'block' : 'none';
     }
 
-    async function up(type, sId, fId) {
-        const file = document.getElementById(fId).files[0];
-        if(!file) return alert("請選取圖片");
+    window.onload = async () => {
+        await liff.init({ liffId: LIFF_ID });
+        if (!liff.isLoggedIn()) { liff.login(); return; }
+        const profile = await liff.getProfile();
+        userName = profile.displayName;
+        userId = profile.userId;
+        fetchData();
+    };
+
+    async function fetchData() {
+        try {
+            const res = await fetch(`${GAS_URL}?lineId=${userId}`);
+            const data = await res.json();
+            userEPoints = data.eventPoints || 0;
+            userHBeans = data.honeyBeans || 0;
+            document.getElementById('userPoints').innerText = userEPoints;
+            document.getElementById('honeyBeans').innerText = userHBeans;
+            updateButtons();
+        } catch(e) { console.error("讀取失敗"); }
+    }
+
+    function updateButtons() {
+        const eGifts = [3, 20, 30, 50, 70, 99999];
+        eGifts.forEach(pts => {
+            const btn = document.getElementById(`gift-e-${pts}`);
+            if (btn && userEPoints >= pts) {
+                btn.innerText = "點我兌換";
+                btn.className = "redeem-btn btn-active";
+            }
+        });
+        const hBtns = document.querySelectorAll('.hb-btn');
+        hBtns.forEach(btn => {
+            const target = parseInt(btn.getAttribute('data-pts'));
+            if (userHBeans >= target) {
+                btn.innerText = "點我兌換";
+                btn.className = "redeem-btn hb-btn btn-active";
+            }
+        });
+    }
+
+    async function redeem(name, cost) {
+        const isHoney = name.includes('蜜豆');
+        if ((isHoney && userHBeans < cost) || (!isHoney && userEPoints < cost)) {
+            alert("點數不足，快去參加活動或購物吧！");
+            return;
+        }
+        if (!confirm(`確定兌換「${name}」嗎？`)) return;
+        
+        document.getElementById('loading').style.display = "flex";
+        const payload = { 
+            type: isHoney ? "蜜豆兌換" : "活動兌換", 
+            lineId: userId,
+            userName: userName, 
+            itemName: name,
+            points: cost,
+            optionType: name.includes('A-') ? 'A' : (name.includes('B-') ? 'B' : '')
+        };
+        
+        await fetch(GAS_URL, { method: "POST", body: JSON.stringify(payload) });
+        alert("兌換申請已送出！請等小助理審核。");
+        location.reload();
+    }
+
+    async function upload(type) {
+        const fileInput = document.getElementById(type === 'event' ? 'eventFile' : 'shopFile');
+        if (!fileInput.files[0]) { alert("請選取截圖！"); return; }
+        
+        document.getElementById('loading').style.display = "flex";
         const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = async () => {
-            const p = await liff.getProfile();
-            const data = {
-                type: type, lineId: p.userId, userName: p.displayName,
-                itemName: sId ? document.getElementById(sId).value : "蜜豆訂單上傳",
-                image: reader.result
+        reader.readAsDataURL(fileInput.files[0]);
+        reader.onload = async (e) => {
+            const payload = { 
+                type: type === 'event' ? "活動集點" : "蜜豆累積", 
+                lineId: userId,
+                userName: userName, 
+                itemName: type === 'event' ? document.getElementById('eventSelect').value : "訂單截圖",
+                image: e.target.result 
             };
-            await fetch(API, { method: "POST", mode: "no-cors", body: JSON.stringify(data) });
-            alert("送出成功！請等待審核。");
+            await fetch(GAS_URL, { method: "POST", body: JSON.stringify(payload) });
+            alert("上傳成功！小助理審核後就會看到點數囉！");
+            location.reload();
         };
-    }
-
-    async function re(type, name, pts, opt="") {
-        if(!confirm(`確定兌換「${name}」？`)) return;
-        const p = await liff.getProfile();
-        const data = {
-            type: type, lineId: p.userId, userName: p.displayName,
-            itemName: name, points: pts, optionType: opt
-        };
-        await fetch(API, { method: "POST", mode: "no-cors", body: JSON.stringify(data) });
-        alert("兌換申請已送出！");
     }
 </script>
 </body>

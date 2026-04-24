@@ -10,24 +10,27 @@
         .tab-container { display: flex; gap: 10px; margin-bottom: 20px; position: sticky; top: 0; z-index: 10; background: #FDFBF7; padding: 5px 0; }
         .tab-btn { flex: 1; padding: 12px; border-radius: 15px; border: 2px solid #FFD166; background: white; font-weight: bold; cursor: pointer; color: #8D6E63; font-size: 0.9rem; transition: 0.3s; }
         .tab-btn.active { background: #FFD166; color: #5D4037; box-shadow: 0 4px 0 #FFB000; }
-        .card { background: white; padding: 15px; border-radius: 20px; border: 3px solid #FFD166; margin-bottom: 20px; }
+        .card { background: white; padding: 15px; border-radius: 20px; border: 3px solid #FFD166; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
         .dashboard { background: #FFFDE7; border-radius: 15px; padding: 15px; text-align: center; margin-bottom: 15px; border: 2px dashed #FFCA28; }
         .points-number { color: #FF6F00; font-size: 2.5rem; font-weight: 900; line-height: 1.2; }
+        
+        /* 核心修改：整齊的二路網格 */
         .gift-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .gift-item { background: white; border-radius: 15px; padding: 10px; display: flex; flex-direction: column; align-items: center; border: 1px solid #FFD166; position: relative; }
-        .plan-tag { position: absolute; top: 5px; left: 5px; background: #FFD166; color: #5D4037; font-size: 10px; padding: 2px 6px; border-radius: 8px; font-weight: bold; z-index: 2; }
+        .gift-item { background: white; border-radius: 15px; padding: 10px; display: flex; flex-direction: column; align-items: center; border: 1px solid #FFD166; position: relative; box-sizing: border-box; }
+        
+        .plan-tag { position: absolute; top: 5px; left: 5px; background: #FF6F00; color: white; font-size: 10px; padding: 2px 8px; border-radius: 8px; font-weight: bold; z-index: 2; }
         .img-container { width: 100%; aspect-ratio: 1 / 1; overflow: hidden; border-radius: 10px; margin-bottom: 8px; border: 1px solid #EEE; background: #f9f9f9; }
         .gift-img { width: 100%; height: 100%; object-fit: cover; }
         .gift-name { font-size: 12px; font-weight: bold; text-align: center; height: 32px; display: flex; align-items: center; justify-content: center; margin-bottom: 5px; line-height: 1.2; color: #5D4037; }
         .gift-pts { font-size: 11px; color: #D84315; font-weight: bold; margin-bottom: 8px; }
         
-        .redeem-btn { width: 100%; padding: 8px 0; border-radius: 10px; border: none; font-size: 11px; font-weight: bold; cursor: pointer; }
-        .btn-locked { background: #CCC !important; color: #666 !important; cursor: not-allowed; }
+        .redeem-btn { width: 100%; padding: 8px 0; border-radius: 10px; border: none; font-size: 11px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn-locked { background: #EEE !important; color: #AAA !important; cursor: not-allowed; }
         .btn-active { background: #D84315 !important; color: white !important; box-shadow: 0 3px 0 #A33311; }
         
         .section-title { grid-column: span 2; font-size: 14px; font-weight: bold; color: #D84315; margin: 15px 0 5px 0; border-left: 4px solid #D84315; padding: 5px 0 5px 10px; background: #FFF3E0; border-radius: 0 8px 8px 0; }
         label { display: block; margin-top: 15px; font-weight: bold; color: #8D6E63; font-size: 14px; }
-        select, input[type="file"] { width: 100%; padding: 12px; margin-top: 8px; border-radius: 12px; border: 1px solid #DDD; box-sizing: border-box; background: white; }
+        select, input[type="file"] { width: 100%; padding: 12px; margin-top: 8px; border-radius: 12px; border: 1px solid #DDD; box-sizing: border-box; background: white; font-size: 14px; }
         .submit-btn { width: 100%; background: #FFD166; color: #5D4037; border: none; padding: 15px; margin-top: 20px; border-radius: 25px; font-size: 1.1rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #FFB000; }
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 100; font-weight: bold; color: #D84315; }
     </style>
@@ -48,9 +51,9 @@
             <div class="points-number" id="userPoints">--</div>
         </div>
         <div class="gift-grid">
-            <div class="gift-item" style="grid-column: span 2;">
-                <div class="img-container" style="aspect-ratio: 2/1;"><img src="https://i.ibb.co/3Y8cdrnn/message-Image-1776500606233.jpg" class="gift-img"></div>
-                <div class="gift-name">💖 華媽咪特別禮</div><div class="gift-pts">99999 點</div>
+            <div class="gift-item">
+                <div class="img-container"><img src="https://i.ibb.co/3Y8cdrnn/message-Image-1776500606233.jpg" class="gift-img"></div>
+                <div class="gift-name">💖 特別禮</div><div class="gift-pts">99999 點</div>
                 <button class="redeem-btn btn-locked" id="gift-e-99999" onclick="redeem('活動特別禮', 99999)">尚未達成</button>
             </div>
             <div class="gift-item">
@@ -58,6 +61,7 @@
                 <div class="gift-name">AMDS體驗組</div><div class="gift-pts">3 點</div>
                 <button class="redeem-btn btn-locked" id="gift-e-3" onclick="redeem('AMDS體驗組', 3)">尚未達成</button>
             </div>
+            
             <div class="gift-item">
                 <div class="img-container"><img src="https://i.ibb.co/J4Q6xm1/S-93298697.jpg" class="gift-img"></div>
                 <div class="gift-name">多巴胺水果杯</div><div class="gift-pts">20 點</div>
@@ -68,20 +72,22 @@
                 <div class="gift-name">露營摺疊提籃</div><div class="gift-pts">30 點</div>
                 <button class="redeem-btn btn-locked" id="gift-e-30" onclick="redeem('提籃', 30)">尚未達成</button>
             </div>
+
             <div class="gift-item">
                 <div class="img-container"><img src="https://i.ibb.co/Y75R3PmY/S-93298701.jpg" class="gift-img"></div>
                 <div class="gift-name">Kitty手提箱</div><div class="gift-pts">50 點</div>
                 <button class="redeem-btn btn-locked" id="gift-e-50" onclick="redeem('Kitty箱', 50)">尚未達成</button>
             </div>
-            <div class="gift-item" style="grid-column: span 2;">
-                <div class="img-container" style="aspect-ratio: 2/1;"><img src="https://i.ibb.co/ympjqWgp/S-93298705.jpg" class="gift-img"></div>
+            <div class="gift-item">
+                <div class="img-container"><img src="https://i.ibb.co/ympjqWgp/S-93298705.jpg" class="gift-img"></div>
                 <div class="gift-name">👑 抱枕被子二合一</div><div class="gift-pts">70 點</div>
                 <button class="redeem-btn btn-locked" id="gift-e-70" onclick="redeem('抱枕被', 70)">尚未達成</button>
             </div>
         </div>
+        
         <label>📅 參加活動/上傳心得</label>
         <select id="eventSelect">
-            <option>週一｜12:00 養美日記</option>
+            <option>週一｜12:00 養美日記📓</option>
             <option>週一｜20:00 親子晚自習</option>
             <option>週三｜21:00 閨蜜群 Live Talk</option>
             <option>週四｜20:00 瘦身健康講座</option>
@@ -102,7 +108,7 @@
             <div style="font-weight:bold; color:#D84315;">尊榮累積蜜豆</div>
             <div class="points-number">🫘 <span id="honeyBeans">--</span></div>
         </div>
-        <div class="gift-grid">
+        <div class="gift-grid" id="honeyGrid">
             <div class="section-title">🫘 3 蜜豆</div>
             <div class="gift-item"><span class="plan-tag">A</span><div class="img-container"><img src="https://i.ibb.co/13hwkg4/S-25165867-0.jpg" class="gift-img"></div><div class="gift-name">麥當勞套餐</div><button class="redeem-btn btn-locked hb-btn" data-pts="3" onclick="redeem('蜜豆3A-麥當勞', 3)">尚未達成</button></div>
             <div class="gift-item"><span class="plan-tag">B</span><div class="img-container"><img src="https://i.ibb.co/m5DStD8Z/message-Image-1776507668994.jpg" class="gift-img"></div><div class="gift-name">白金盾 1包</div><button class="redeem-btn btn-locked hb-btn" data-pts="3" onclick="redeem('蜜豆3B-白金盾', 3)">尚未達成</button></div>
@@ -111,18 +117,7 @@
             <div class="gift-item"><span class="plan-tag">A</span><div class="img-container"><img src="https://i.ibb.co/TDMncyPq/S-25165869-0.jpg" class="gift-img"></div><div class="gift-name">星巴克雙人餐</div><button class="redeem-btn btn-locked hb-btn" data-pts="10" onclick="redeem('蜜豆10A-星巴克', 10)">尚未達成</button></div>
             <div class="gift-item"><span class="plan-tag">B</span><div class="img-container"><img src="https://i.ibb.co/nNyPLHG6/S-25165874.jpg" class="gift-img"></div><div class="gift-name">三麗鷗保溫杯</div><button class="redeem-btn btn-locked hb-btn" data-pts="10" onclick="redeem('蜜豆10B-保溫杯', 10)">尚未達成</button></div>
             
-            <div class="section-title">🫘 18 蜜豆</div>
-            <div class="gift-item"><span class="plan-tag">A</span><div class="img-container"><img src="https://i.ibb.co/TMFbsYZH/S-25165870-0.jpg" class="gift-img"></div><div class="gift-name">肯德基蛋塔</div><button class="redeem-btn btn-locked hb-btn" data-pts="18" onclick="redeem('蜜豆18A-蛋塔', 18)">尚未達成</button></div>
-            <div class="gift-item"><span class="plan-tag">B</span><div class="img-container"><img src="https://i.ibb.co/Lhx2pRvY/S-25165873.jpg" class="gift-img"></div><div class="gift-name">檀木梳禮盒</div><button class="redeem-btn btn-locked hb-btn" data-pts="18" onclick="redeem('蜜豆18B-木梳', 18)">尚未達成</button></div>
-            
-            <div class="section-title">🫘 30 蜜豆</div>
-            <div class="gift-item"><span class="plan-tag">A</span><div class="img-container"><img src="https://i.ibb.co/vx3G3PLD/S-25165871-0.jpg" class="gift-img"></div><div class="gift-name">爭鮮 300元</div><button class="redeem-btn btn-locked hb-btn" data-pts="30" onclick="redeem('蜜豆30A-爭鮮', 30)">尚未達成</button></div>
-            <div class="gift-item"><span class="plan-tag">B</span><div class="img-container"><img src="https://i.ibb.co/qYm2xBw0/S-25165872.jpg" class="gift-img"></div><div class="gift-name">益生菌乳液</div><button class="redeem-btn btn-locked hb-btn" data-pts="30" onclick="redeem('蜜豆30B-乳液', 30)">尚未達成</button></div>
-            
-            <div class="section-title">🫘 68 蜜豆</div>
-            <div class="gift-item"><span class="plan-tag">A</span><div class="img-container"><img src="https://i.ibb.co/Mx7D84ph/message-Image-1776507523365.jpg" class="gift-img"></div><div class="gift-name">益生菌 60入</div><button class="redeem-btn btn-locked hb-btn" data-pts="68" onclick="redeem('蜜豆68A-益生菌', 68)">尚未達成</button></div>
-            <div class="gift-item"><span class="plan-tag">B</span><div class="img-container"><img src="https://i.ibb.co/992PW17B/message-Image-1776507539257.jpg" class="gift-img"></div><div class="gift-name">👑 Coach 包</div><button class="redeem-btn btn-locked hb-btn" data-pts="68" onclick="redeem('蜜豆68B-Coach', 68)">尚未達成</button></div>
-        </div>
+            </div>
         <label>📸 消費截圖上傳</label>
         <input type="file" id="shopFile" accept="image/*">
         <button class="submit-btn" onclick="upload('shop')">上傳累積蜜豆 🛍️</button>

@@ -7,30 +7,24 @@
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <style>
         body { background-color: #FDFBF7; font-family: -apple-system, "Microsoft JhengHei", sans-serif; margin: 0; padding: 15px; color: #5D4037; }
-        
-        /* 會員身分顯示區 */
         .user-profile { display: flex; align-items: center; background: white; padding: 10px 15px; border-radius: 50px; border: 2px solid #FFD166; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         #userPic { width: 40px; height: 40px; border-radius: 50%; border: 2px solid #FFFDE7; margin-right: 12px; object-fit: cover; background: #EEE; }
         #displayName { font-weight: bold; color: #5D4037; font-size: 14px; }
         .login-status { font-size: 10px; color: #4CAF50; margin-top: 2px; }
-
         .tab-container { display: flex; gap: 10px; margin-bottom: 20px; position: sticky; top: 0; z-index: 10; background: #FDFBF7; padding: 5px 0; }
         .tab-btn { flex: 1; padding: 12px; border-radius: 15px; border: 2px solid #FFD166; background: white; font-weight: bold; cursor: pointer; color: #8D6E63; font-size: 0.9rem; transition: 0.3s; }
         .tab-btn.active { background: #FFD166; color: #5D4037; box-shadow: 0 4px 0 #FFB000; }
         .card { background: white; padding: 15px; border-radius: 20px; border: 3px solid #FFD166; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
         .dashboard { background: #FFFDE7; border-radius: 15px; padding: 15px; text-align: center; margin-bottom: 15px; border: 2px dashed #FFCA28; }
         .points-number { color: #FF6F00; font-size: 2.5rem; font-weight: 900; line-height: 1.2; }
-        
         .history-box { background: #F5F5F5; border-radius: 12px; padding: 12px; margin-top: 15px; font-size: 13px; color: #795548; border-left: 5px solid #FFD166; }
         .history-title { font-weight: bold; margin-bottom: 5px; color: #5D4037; display: flex; align-items: center; }
         .history-item { margin-bottom: 3px; border-bottom: 1px dashed #DDD; padding-bottom: 3px; }
-
         .collapse-header { display: flex; justify-content: center; align-items: center; padding: 12px; background: #FFD166; border-radius: 15px; cursor: pointer; font-weight: bold; margin-bottom: 10px; color: #5D4037; font-size: 14px; }
         .collapse-header::after { content: '▼'; margin-left: 10px; font-size: 10px; transition: 0.3s; }
         .collapse-header.active::after { content: '▲'; }
         .collapse-content { display: none; margin-top: 10px; }
         .collapse-content.show { display: block; }
-
         .gift-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .gift-item { background: white; border-radius: 15px; padding: 10px; display: flex; flex-direction: column; align-items: center; border: 1px solid #FFD166; position: relative; box-sizing: border-box; }
         .plan-tag { position: absolute; top: 5px; left: 5px; background: #FF6F00; color: white; font-size: 10px; padding: 2px 8px; border-radius: 8px; font-weight: bold; z-index: 2; }
@@ -71,7 +65,6 @@
             <div style="font-weight:bold; color:#F57F17; font-size: 14px;">目前活動累積點數</div>
             <div class="points-number" id="userPoints">--</div>
         </div>
-
         <div class="collapse-header" onclick="toggleCollapse('eventGifts', this)">🎁 兌換活動禮物 (點擊展開)</div>
         <div id="eventGifts" class="collapse-content">
             <div class="gift-grid">
@@ -83,7 +76,6 @@
                 <div class="gift-item"><div class="img-container"><img src="https://i.ibb.co/ympjqWgp/S-93298705.jpg" class="gift-img"></div><div class="gift-name">👑 抱枕被子二合一</div><div class="gift-pts">70 點</div><button class="redeem-btn btn-locked" id="gift-e-70" onclick="redeem('抱枕被', 70)">尚未達成</button></div>
             </div>
         </div>
-        
         <label>📅 參加活動/上傳心得</label>
         <select id="eventSelect">
             <option>週一｜12:00 養美日記📓</option><option>週一｜20:00 親子晚自習</option>
@@ -93,7 +85,6 @@
         </select>
         <input type="file" id="eventFile" accept="image/*">
         <button class="submit-btn" onclick="upload('event')">送出截圖集點 🚀</button>
-        
         <div id="actHistoryBox" class="history-box" style="display:none;">
             <div class="history-title">📝 最近活動紀錄</div>
             <div id="actHistoryList"></div>
@@ -107,7 +98,6 @@
             <div style="font-weight:bold; color:#D84315;">尊榮累積蜜豆</div>
             <div class="points-number">🫘 <span id="honeyBeans">--</span></div>
         </div>
-
         <div class="collapse-header" onclick="toggleCollapse('honeyGifts', this)">🎁 查詢可兌換禮物 (點擊展開)</div>
         <div id="honeyGifts" class="collapse-content">
             <div class="gift-grid">
@@ -137,7 +127,6 @@
         <label>📸 消費截圖上傳</label>
         <input type="file" id="shopFile" accept="image/*">
         <button class="submit-btn" onclick="upload('shop')">上傳累積蜜豆 🛍️</button>
-        
         <div id="beanHistoryBox" class="history-box" style="display:none;">
             <div class="history-title">🫘 最近蜜豆紀錄</div>
             <div id="beanHistoryList"></div>
@@ -163,29 +152,33 @@
         document.getElementById('honeyContent').style.display = type === 'honey' ? 'block' : 'none';
     }
 
-    window.onload = async () => {
-        await liff.init({ liffId: LIFF_ID });
-        if (!liff.isLoggedIn()) { liff.login(); return; }
-        const profile = await liff.getProfile();
-        userId = profile.userId;
-        userName = profile.displayName;
-        userPic = profile.pictureUrl;
-
-        // 更新顯示頭像與名字
-        document.getElementById('displayName').innerText = userName;
-        if (userPic) { document.getElementById('userPic').src = userPic; }
-        
-        fetchData();
+    window.onload = function() {
+        liff.init({ liffId: LIFF_ID }).then(async () => {
+            if (!liff.isLoggedIn()) {
+                liff.login();
+            } else {
+                const profile = await liff.getProfile();
+                userId = profile.userId;
+                userName = profile.displayName;
+                userPic = profile.pictureUrl;
+                document.getElementById('displayName').innerText = userName;
+                if (userPic) { document.getElementById('userPic').src = userPic; }
+                fetchData();
+            }
+        }).catch((err) => { console.error(err); });
     };
 
     async function fetchData() {
+        if (!userId) return;
+        document.getElementById('userPoints').innerText = "⏳";
+        document.getElementById('honeyBeans').innerText = "⏳";
         try {
             const res = await fetch(`${GAS_URL}?lineId=${userId}&t=${Date.now()}`);
             const data = await res.json();
-            userEPoints = data.eventPoints || 0; userHBeans = data.honeyBeans || 0;
+            userEPoints = data.eventPoints || 0; 
+            userHBeans = data.honeyBeans || 0;
             document.getElementById('userPoints').innerText = userEPoints;
             document.getElementById('honeyBeans').innerText = userHBeans;
-            
             if(data.actHistory && data.actHistory.length > 0) {
                 document.getElementById('actHistoryBox').style.display = 'block';
                 document.getElementById('actHistoryList').innerHTML = data.actHistory.map(item => `<div class="history-item">${item}</div>`).join('');
@@ -195,7 +188,7 @@
                 document.getElementById('beanHistoryList').innerHTML = data.beanHistory.map(item => `<div class="history-item">${item}</div>`).join('');
             }
             updateButtons();
-        } catch(e) { console.error("讀取失敗"); }
+        } catch(e) { setTimeout(fetchData, 2000); }
     }
 
     function updateButtons() {
@@ -220,21 +213,16 @@
     }
 
     async function upload(type) {
-        if (!userId) {
-            alert("⚠️ 尚未抓取到 LINE 資訊，請重新開啟網頁！");
-            location.reload();
-            return;
-        }
+        if (!userId) { alert("尚未登入成功，請重整！"); location.reload(); return; }
         const fileInput = document.getElementById(type === 'event' ? 'eventFile' : 'shopFile');
         if (!fileInput.files[0]) { alert("請選取截圖！"); return; }
-        
         document.getElementById('loading').style.display = "flex";
         const reader = new FileReader();
         reader.readAsDataURL(fileInput.files[0]);
         reader.onload = async (e) => {
             const payload = { type: type === 'event' ? "活動集點" : "蜜豆累積", lineId: userId, userName: userName, itemName: type === 'event' ? document.getElementById('eventSelect').value : "訂單截圖", image: e.target.result };
             await fetch(GAS_URL, { method: "POST", body: JSON.stringify(payload) });
-            alert("上傳成功！請等待小助理審核。"); location.reload();
+            alert("上傳成功！"); location.reload();
         };
     }
 </script>

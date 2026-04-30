@@ -128,18 +128,30 @@
     </div>
 </div>
 
-<!-- 抽獎內容 -->
+<!-- 抽獎活動內容 -->
 <div id="luckyContent" class="tab-content" style="display:none;">
     <div class="card">
         <div class="dashboard">
             <div style="font-weight:bold; color:#D84315;">✨ 抽獎活動專區 ✨</div>
-            <p style="font-size:13px; color:#8D6E63; margin-top:10px;">只要上傳今日活動截圖<br>即可參加抽獎名單核對喔！</p>
+            <p style="font-size:13px; color:#8D6E63; margin-top:10px;">請選擇活動項目並上傳截圖<br>即可參加名單核對喔！</p>
         </div>
-        <label>📸 上傳今日上線截圖</label>
+
+        <label>🎁 選擇抽獎活動項目</label>
+        <select id="luckySelect">
+            <option>每月簽到抽好禮</option>
+            <option>特別加碼抽(寶貝大集合）</option>
+            <option>特別加碼抽(華媽咪閨蜜）</option>
+            <option>開團回饋加碼抽</option>
+            <option>到貨曬單加碼抽</option>
+            <option disabled>──────────</option>
+            <option>🍯閨蜜限定🍯搶先體驗</option>
+            <option>🍯閨蜜限定🍯購物金</option>
+        </select>
+
+        <label>📸 上傳活動截圖</label>
         <input type="file" id="luckyFile" accept="image/*">
-        <button class="submit-btn" style="background:#FF7043; color:white; box-shadow:0 4px 0 #D84315;" onclick="upload('lucky')">參加抽獎報到 🙋‍♀️</button>
+        <button class="submit-btn" style="background:#FF7043; color:white; box-shadow:0 4px 0 #D84315;" onclick="upload('lucky')">參加活動報到 🙋‍♀️</button>
         
-        <!-- 新增：抽獎報到明細區 -->
         <div id="luckyHistoryBox" class="history-box" style="display:none;">
             <div class="history-title">🎁 最近報到明細</div>
             <div id="luckyHistoryList"></div>
@@ -193,7 +205,6 @@
             document.getElementById('beanHistoryBox').style.display = 'block';
             document.getElementById('beanHistoryList').innerHTML = data.beanHistory.map(item => `<div class="history-item">${item}</div>`).join('');
         }
-        // 顯示抽獎紀錄
         if(data.luckyHistory && data.luckyHistory.length > 0) {
             document.getElementById('luckyHistoryBox').style.display = 'block';
             document.getElementById('luckyHistoryList').innerHTML = data.luckyHistory.map(item => `<div class="history-item">${item}</div>`).join('');
@@ -231,10 +242,17 @@
         const reader = new FileReader();
         reader.readAsDataURL(fileInput.files[0]);
         reader.onload = async (e) => {
+            let itemName = "報到截圖";
+            if (type === 'event') {
+                itemName = document.getElementById('eventSelect').value;
+            } else if (type === 'lucky') {
+                itemName = document.getElementById('luckySelect').value;
+            }
+
             const payload = { 
                 type: type === 'lucky' ? "上線抽獎" : (type === 'event' ? "活動集點" : "蜜豆累積"), 
                 lineId: userId, userName: userName, 
-                itemName: type === 'event' ? document.getElementById('eventSelect').value : "報到截圖",
+                itemName: itemName,
                 image: e.target.result 
             };
             await fetch(GAS_URL, { method: "POST", body: JSON.stringify(payload) });

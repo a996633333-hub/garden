@@ -60,7 +60,7 @@
     <button id="tab-lucky" class="tab-btn" onclick="switchTab('lucky')">🎁 抽獎活動</button>
 </div>
 
-<!-- 活動內容 -->
+<!-- 分頁內容... (集點、蜜豆) -->
 <div id="eventContent" class="tab-content">
     <div class="card">
         <div class="dashboard">
@@ -91,7 +91,6 @@
     </div>
 </div>
 
-<!-- 蜜豆內容 -->
 <div id="honeyContent" class="tab-content" style="display:none;">
     <div class="card">
         <div class="dashboard"><div>尊榮累積蜜豆</div><div class="points-number">🫘 <span id="honeyBeans">--</span></div></div>
@@ -128,14 +127,12 @@
     </div>
 </div>
 
-<!-- 抽獎活動內容 -->
 <div id="luckyContent" class="tab-content" style="display:none;">
     <div class="card">
         <div class="dashboard">
             <div style="font-weight:bold; color:#D84315;">✨ 抽獎活動專區 ✨</div>
             <p style="font-size:13px; color:#8D6E63; margin-top:10px;">請選擇活動項目並上傳截圖<br>即可參加名單核對喔！</p>
         </div>
-
         <label>🎁 選擇抽獎活動項目</label>
         <select id="luckySelect">
             <option>每月簽到抽好禮</option>
@@ -147,15 +144,9 @@
             <option>🍯閨蜜限定🍯搶先體驗</option>
             <option>🍯閨蜜限定🍯購物金</option>
         </select>
-
-        <label>📸 上傳活動截圖</label>
         <input type="file" id="luckyFile" accept="image/*">
         <button class="submit-btn" style="background:#FF7043; color:white; box-shadow:0 4px 0 #D84315;" onclick="upload('lucky')">參加活動報到 🙋‍♀️</button>
-        
-        <div id="luckyHistoryBox" class="history-box" style="display:none;">
-            <div class="history-title">🎁 最近報到明細</div>
-            <div id="luckyHistoryList"></div>
-        </div>
+        <div id="luckyHistoryBox" class="history-box" style="display:none;"><div class="history-title">🎁 最近報到明細</div><div id="luckyHistoryList"></div></div>
     </div>
 </div>
 
@@ -196,7 +187,6 @@
         userEPoints = data.eventPoints || 0; userHBeans = data.honeyBeans || 0;
         document.getElementById('userPoints').innerText = userEPoints;
         document.getElementById('honeyBeans').innerText = userHBeans;
-        
         if(data.actHistory && data.actHistory.length > 0) {
             document.getElementById('actHistoryBox').style.display = 'block';
             document.getElementById('actHistoryList').innerHTML = data.actHistory.map(item => `<div class="history-item">${item}</div>`).join('');
@@ -233,31 +223,51 @@
         alert("兌換申請已送出！"); location.reload();
     }
 
+    // ✨ 核心：圖片壓縮功能 (讓上傳變快的小秘密)
+    function compressImage(file) {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = (event) => {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
+                    const max_size = 1000; // 如果照片邊長超過 1000 像素，就縮小它
+                    if (width > height && width > max_size) { height *= max_size / width; width = max_size; }
+                    else if (height > max_size) { width *= max_size / height; height = max_size; }
+                    canvas.width = width; canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    resolve(canvas.toDataURL('image/jpeg', 0.7)); // 壓縮畫質為 70%，體積會小非常多
+                };
+            };
+        });
+    }
+
     async function upload(type) {
-        if (!userId) { alert("尚未登入！"); return; }
+        if (!userId) { alert("尚未登入成功！"); return; }
         let fileId = type === 'event' ? 'eventFile' : (type === 'shop' ? 'shopFile' : 'luckyFile');
         const fileInput = document.getElementById(fileId);
         if (!fileInput.files[0]) { alert("請選取圖片！"); return; }
+        
         document.getElementById('loading').style.display = "flex";
-        const reader = new FileReader();
-        reader.readAsDataURL(fileInput.files[0]);
-        reader.onload = async (e) => {
-            let itemName = "報到截圖";
-            if (type === 'event') {
-                itemName = document.getElementById('eventSelect').value;
-            } else if (type === 'lucky') {
-                itemName = document.getElementById('luckySelect').value;
-            }
+        
+        // ✨ 自動壓縮
+        const compressedBase64 = await compressImage(fileInput.files[0]);
+        
+        let itemName = "報到截圖";
+        if (type === 'event') { itemName = document.getElementById('eventSelect').value; } 
+        else if (type === 'lucky') { itemName = document.getElementById('luckySelect').value; }
 
-            const payload = { 
-                type: type === 'lucky' ? "上線抽獎" : (type === 'event' ? "活動集點" : "蜜豆累積"), 
-                lineId: userId, userName: userName, 
-                itemName: itemName,
-                image: e.target.result 
-            };
-            await fetch(GAS_URL, { method: "POST", body: JSON.stringify(payload) });
-            alert("上傳成功！"); location.reload();
+        const payload = { 
+            type: type === 'lucky' ? "抽獎活動" : (type === 'event' ? "活動集點" : "蜜豆累積"), 
+            lineId: userId, userName: userName, itemName: itemName, image: compressedBase64 
         };
+        await fetch(GAS_URL, { method: "POST", body: JSON.stringify(payload) });
+        alert("上傳成功！"); location.reload();
     }
 </script>
 </body>
